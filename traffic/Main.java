@@ -1,5 +1,6 @@
 package traffic;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -8,16 +9,32 @@ public class Main {
     System.out.println("Welcome to the traffic management system!");
 
     System.out.print("Input the number of roads: ");
-    int roads = Integer.parseInt(SCAN.nextLine());
+    int roads = getValidNumber();
     System.out.print("Input the interval: ");
-    int interval = Integer.parseInt(SCAN.nextLine());
+    int interval = getValidNumber();
 
     showMenu();
+  }
+
+  private static int getValidNumber() {
+    int num = 0;
+    while (num <= 0) {
+      try {
+        num = Integer.parseInt(SCAN.nextLine());
+        if (num <= 0) {
+          throw new NumberFormatException();
+        }
+      } catch (RuntimeException ex) {
+        System.out.print("Error! Incorrect input. Try again: ");
+      }
+    }
+    return num;
   }
 
   private static void showMenu() {
     String userOption;
     do {
+      clearMenu();
       System.out.println("""
               Menu:
               1. Add
@@ -32,8 +49,21 @@ public class Main {
         case "2" -> System.out.println("Road deleted");
         case "3" -> System.out.println("System opened");
         case "0" -> System.out.println("Bye!");
-        default -> System.out.println("Invalid option!");
+        default -> System.out.println("Incorrect option");
+      }
+      if (!"0".equals(userOption)) {
+        SCAN.nextLine();
       }
     } while (!"0".equals(userOption));
+  }
+
+  private static void clearMenu() {
+    try {
+      var clearCommand = System.getProperty("os.name").contains("Windows")
+              ? new ProcessBuilder("cmd", "/c", "cls")
+              : new ProcessBuilder("clear");
+      clearCommand.inheritIO().start().waitFor();
+    }
+    catch (IOException | InterruptedException e) {}
   }
 }
