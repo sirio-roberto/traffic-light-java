@@ -5,6 +5,8 @@ import java.util.Scanner;
 
 public class Main {
   private static final Scanner SCAN = new Scanner(System.in);
+
+  private static QueueThread queueThread;
   public static void main(String[] args){
     System.out.println("Welcome to the traffic management system!");
 
@@ -12,6 +14,9 @@ public class Main {
     int roads = getValidNumber();
     System.out.print("Input the interval: ");
     int interval = getValidNumber();
+
+    queueThread = new QueueThread("QueueThread", roads, interval);
+    queueThread.start();
 
     showMenu();
   }
@@ -47,23 +52,31 @@ public class Main {
       switch (userOption) {
         case "1" -> System.out.println("Road added");
         case "2" -> System.out.println("Road deleted");
-        case "3" -> System.out.println("System opened");
-        case "0" -> System.out.println("Bye!");
+        case "3" -> showSystemState();
+        case "0" -> {
+          System.out.println("Bye!");
+          queueThread.setKeepRunning(false);
+        }
         default -> System.out.println("Incorrect option");
       }
       if (!"0".equals(userOption)) {
         SCAN.nextLine();
+        queueThread.setPrintInfo(false);
       }
     } while (!"0".equals(userOption));
   }
 
-  private static void clearMenu() {
+  private static void showSystemState() {
+      queueThread.setPrintInfo(true);
+  }
+
+  public static void clearMenu() {
     try {
       var clearCommand = System.getProperty("os.name").contains("Windows")
               ? new ProcessBuilder("cmd", "/c", "cls")
               : new ProcessBuilder("clear");
       clearCommand.inheritIO().start().waitFor();
     }
-    catch (IOException | InterruptedException e) {}
+    catch (IOException | InterruptedException ignored) {}
   }
 }
