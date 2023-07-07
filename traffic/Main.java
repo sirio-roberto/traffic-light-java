@@ -20,7 +20,7 @@ public class Main {
     int interval = getValidNumber();
 
     roadArray = new Road[roads];
-    queueThread = new QueueThread("QueueThread", roads, interval);
+    queueThread = new QueueThread("QueueThread", roads, interval, roadArray);
     queueThread.start();
 
     showMenu();

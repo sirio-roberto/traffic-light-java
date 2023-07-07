@@ -9,10 +9,13 @@ public class QueueThread extends Thread {
 
     private boolean keepRunning = true;
 
-    public QueueThread(String name, int roads, int interval) {
+    private Road[] roadArray;
+
+    public QueueThread(String name, int roads, int interval, Road[] roadArray) {
         super(name);
         this.roads = roads;
         this.interval = interval;
+        this.roadArray = roadArray;
     }
 
     public void setPrintInfo(boolean printInfo) {
@@ -34,8 +37,10 @@ public class QueueThread extends Thread {
                         ! %ds. have passed since system startup !
                         ! Number of roads: %d !
                         ! Interval: %d !
+                        
+                        %s
                         ! Press "Enter" to open menu !
-                        """, seconds, roads, interval);
+                        """, seconds, roads, interval, getRoadList());
                 }
                 sleep(1000L);
                 seconds++;
@@ -44,5 +49,15 @@ public class QueueThread extends Thread {
             }
 
         }
+    }
+
+    private String getRoadList() {
+        StringBuilder result = new StringBuilder();
+        for (Road road: roadArray) {
+            if (road != null) {
+                result.append(road.getName()).append("\n");
+            }
+        }
+        return result.toString();
     }
 }
