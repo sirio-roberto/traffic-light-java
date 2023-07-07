@@ -1,12 +1,16 @@
 package traffic;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
   private static final Scanner SCAN = new Scanner(System.in);
 
   private static QueueThread queueThread;
+
+  private static Road[] roadArray;
   public static void main(String[] args){
     System.out.println("Welcome to the traffic management system!");
 
@@ -15,6 +19,7 @@ public class Main {
     System.out.print("Input the interval: ");
     int interval = getValidNumber();
 
+    roadArray = new Road[roads];
     queueThread = new QueueThread("QueueThread", roads, interval);
     queueThread.start();
 
@@ -50,7 +55,7 @@ public class Main {
       userOption = SCAN.nextLine();
 
       switch (userOption) {
-        case "1" -> System.out.println("Road added");
+        case "1" -> addNewRoad();
         case "2" -> System.out.println("Road deleted");
         case "3" -> showSystemState();
         case "0" -> {
@@ -64,6 +69,34 @@ public class Main {
         queueThread.setPrintInfo(false);
       }
     } while (!"0".equals(userOption));
+  }
+
+  private static void addNewRoad() {
+    if (Arrays.stream(roadArray).noneMatch(Objects::isNull)) {
+      System.out.println("Queue is full");
+    } else {
+      System.out.print("Input road name: ");
+      String roadName = SCAN.nextLine();
+
+      Road road = new Road(roadName);
+      road.setRear(true);
+      if (Arrays.stream(roadArray).allMatch(Objects::isNull)) {
+        road.setFront(true);
+        roadArray[0] = road;
+      } else {
+        for (int i = 0; i < roadArray.length; i++) {
+          if (roadArray[i] != null && roadArray[i].isRear()) {
+            roadArray[i].setRear(false);
+            int nextIndex = (i + 1) % roadArray.length;
+            roadArray[nextIndex] = road;
+            break;
+          }
+        }
+      }
+
+      System.out.println(roadName + " Added!");
+//      System.out.println(Arrays.toString(roadArray));
+    }
   }
 
   private static void showSystemState() {
