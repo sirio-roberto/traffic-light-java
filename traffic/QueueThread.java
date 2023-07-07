@@ -53,9 +53,15 @@ public class QueueThread extends Thread {
 
     private String getRoadList() {
         StringBuilder result = new StringBuilder();
-        for (Road road: roadArray) {
-            if (road != null) {
-                result.append(road.getName()).append("\n");
+        for (int i = 0; i < roadArray.length; i++) {
+            if (roadArray[i] != null && roadArray[i].isFront()) {
+                int nextIndex = i;
+                while (roadArray[nextIndex] != null && !roadArray[nextIndex].isRear()) {
+                    result.append(roadArray[nextIndex].getName()).append("\n");
+                    nextIndex = (nextIndex + 1) % roadArray.length;
+                }
+                result.append(roadArray[nextIndex].getName()).append("\n");
+                return result.toString();
             }
         }
         return result.toString();

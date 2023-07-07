@@ -56,7 +56,7 @@ public class Main {
 
       switch (userOption) {
         case "1" -> addNewRoad();
-        case "2" -> System.out.println("Road deleted");
+        case "2" -> removeFirstRoad();
         case "3" -> showSystemState();
         case "0" -> {
           System.out.println("Bye!");
@@ -71,13 +71,31 @@ public class Main {
     } while (!"0".equals(userOption));
   }
 
+  private static void removeFirstRoad() {
+    if (Arrays.stream(roadArray).allMatch(Objects::isNull)) {
+      System.out.println("Queue is empty");
+    } else {
+      for (int i = 0; i < roadArray.length; i++) {
+        if (roadArray[i] != null && roadArray[i].isFront()) {
+          System.out.println(roadArray[i] + " deleted!");
+          roadArray[i] = null;
+          int nextIndex = (i + 1) % roadArray.length;
+          if (roadArray[nextIndex] != null) {
+            roadArray[nextIndex].setFront(true);
+          }
+          break;
+        }
+      }
+    }
+  }
+
   private static void addNewRoad() {
+    System.out.print("Input road name: ");
+    String roadName = SCAN.nextLine();
+
     if (Arrays.stream(roadArray).noneMatch(Objects::isNull)) {
       System.out.println("Queue is full");
     } else {
-      System.out.print("Input road name: ");
-      String roadName = SCAN.nextLine();
-
       Road road = new Road(roadName);
       road.setRear(true);
       if (Arrays.stream(roadArray).allMatch(Objects::isNull)) {
