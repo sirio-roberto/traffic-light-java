@@ -11,13 +11,16 @@ public class Main {
   private static QueueThread queueThread;
 
   private static Road[] roadArray;
+
+  private static int roads;
+  private static int interval;
   public static void main(String[] args){
     System.out.println("Welcome to the traffic management system!");
 
     System.out.print("Input the number of roads: ");
-    int roads = getValidNumber();
+    roads = getValidNumber();
     System.out.print("Input the interval: ");
-    int interval = getValidNumber();
+    interval = getValidNumber();
 
     roadArray = new Road[roads];
     queueThread = new QueueThread("QueueThread", roads, interval, roadArray);
@@ -100,6 +103,7 @@ public class Main {
       road.setRear(true);
       if (Arrays.stream(roadArray).allMatch(Objects::isNull)) {
         road.setFront(true);
+        road.setTiming(interval);
         roadArray[0] = road;
       } else {
         for (int i = 0; i < roadArray.length; i++) {
@@ -107,13 +111,17 @@ public class Main {
             roadArray[i].setRear(false);
             int nextIndex = (i + 1) % roadArray.length;
             roadArray[nextIndex] = road;
+            if (roadArray[i].isFront()) {
+              roadArray[nextIndex].setTiming(roadArray[i].getTiming());
+            } else {
+              roadArray[nextIndex].setTiming(roadArray[i].getTiming() + interval);
+            }
             break;
           }
         }
       }
 
       System.out.println(roadName + " Added!");
-//      System.out.println(Arrays.toString(roadArray));
     }
   }
 

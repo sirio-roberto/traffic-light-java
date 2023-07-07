@@ -6,9 +6,13 @@ public class Road {
     private final String name;
     private boolean isFront = false;
     private boolean isRear = false;
+    private boolean isOpen = false;
+
+    private int timing;
 
     public Road(String name) {
         this.name = name;
+        this.timing = 0;
     }
 
     public String getName() {
@@ -21,6 +25,7 @@ public class Road {
 
     public void setFront(boolean front) {
         isFront = front;
+        isOpen = isFront;
     }
 
     public boolean isRear() {
@@ -29,6 +34,26 @@ public class Road {
 
     public void setRear(boolean rear) {
         isRear = rear;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public int getTiming() {
+        return timing;
+    }
+
+    public void setTiming(int timing) {
+        this.timing = timing;
+    }
+
+    public void increaseTiming() {
+        timing++;
+    }
+
+    public void decreaseTiming() {
+        timing--;
     }
 
     @Override
