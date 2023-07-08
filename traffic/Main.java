@@ -115,6 +115,7 @@ public class Main {
             road.setRear(true);
             if (Arrays.stream(roadArray).allMatch(Objects::isNull)) {
                 road.setFront(true);
+                road.setOpen(true);
                 road.setTiming(interval);
                 roadArray[0] = road;
             } else {

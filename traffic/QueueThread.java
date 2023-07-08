@@ -58,36 +58,25 @@ public class QueueThread extends Thread {
         for (int i = 0; i < roadArray.length; i++) {
             if (roadArray[i] != null) {
                 roadArray[i].decreaseTiming();
-                if (roadArray[i].isFront() && roadArray[i].getTiming() < 1) {
-                    if (!roadArray[i].isRear()) {
-                        roadArray[i].setFront(false);
-                        Arrays.stream(roadArray).forEach(r -> {
-                            if (r != null) {
-                                r.setRear(false);
-                            }
-                        } );
-                        roadArray[i].setRear(true);
-                        int nextIndex = (i + 1) % roadArray.length;
-                        while (roadArray[nextIndex] == null) {
-                            nextIndex = (nextIndex + 1) % roadArray.length;
-                        }
-                        Road front = roadArray[nextIndex];
-                        front.setFront(true);
-                        int timing = 0;
-                        while (true) {
-                            if (roadArray[nextIndex] != null) {
-                                roadArray[nextIndex].setTiming(timing);
-                                timing += interval;
-                                if (roadArray[nextIndex].isRear()) {
-                                    front.setTiming(interval);
-                                    return;
-                                }
-                            }
-                            nextIndex = (nextIndex + 1) % roadArray.length;
-                        }
+                if (roadArray[i].isOpen() && roadArray[i].getTiming() < 1) {
+                    roadArray[i].setOpen(false);
+                    int nextIndex = (i + 1) % roadArray.length;
+                    while (roadArray[nextIndex] == null) {
+                        nextIndex = (nextIndex + 1) % roadArray.length;
                     }
-                    else {
-                        roadArray[i].setTiming(interval);
+                    roadArray[nextIndex].setOpen(true);
+                    int timing = interval;
+                    roadArray[nextIndex].setTiming(timing);
+                    nextIndex = (nextIndex + 1) % roadArray.length;
+                    while (true) {
+                        if (roadArray[nextIndex] != null) {
+                            if (roadArray[nextIndex].isOpen()) {
+                                return;
+                            }
+                            roadArray[nextIndex].setTiming(timing);
+                            timing += interval;
+                        }
+                        nextIndex = (nextIndex + 1) % roadArray.length;
                     }
                 }
             }
@@ -100,7 +89,7 @@ public class QueueThread extends Thread {
             if (roadArray[i] != null && roadArray[i].isFront()) {
                 int nextIndex = i;
                 while (roadArray[nextIndex] != null && !roadArray[nextIndex].isRear()) {
-                    result.append(roadArray[nextIndex].getName()).append("\n");
+                    result.append(roadArray[nextIndex].getRoadStatus()).append("\n");
                     nextIndex = (nextIndex + 1) % roadArray.length;
                 }
                 if (roadArray[nextIndex] != null) {
