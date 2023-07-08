@@ -1,5 +1,7 @@
 package traffic;
 
+import java.util.Arrays;
+
 public class QueueThread extends Thread {
 
     private int roads;
@@ -9,7 +11,7 @@ public class QueueThread extends Thread {
 
     private boolean keepRunning = true;
 
-    private Road[] roadArray;
+    private final Road[] roadArray;
 
     public QueueThread(String name, int roads, int interval, Road[] roadArray) {
         super(name);
@@ -33,6 +35,7 @@ public class QueueThread extends Thread {
             try {
                 if (printInfo) {
                     Main.clearMenu();
+                    updateRoadStatuses();
                     System.out.printf("""
                         ! %ds. have passed since system startup !
                         ! Number of roads: %d !
@@ -51,17 +54,51 @@ public class QueueThread extends Thread {
         }
     }
 
+    private void updateRoadStatuses() {
+        for (int i = 0; i < roadArray.length; i++) {
+            if (roadArray[i] != null) {
+                roadArray[i].decreaseTiming();
+                if (roadArray[i].isFront() && roadArray[i].getTiming() < 1) {
+                    if (!roadArray[i].isRear()) {
+                        roadArray[i].setFront(false);
+                        Arrays.stream(roadArray).forEach(r -> {
+                            if (r != null) {
+                                r.setRear(false);
+                            }
+                        } );
+                        roadArray[i].setRear(true);
+                        int nextIndex = (i + 1) % roadArray.length;
+                        while (roadArray[nextIndex] == null) {
+                            nextIndex = (nextIndex + 1) % roadArray.length;
+                        }
+                        Road front = roadArray[nextIndex];
+                        front.setFront(true);
+                        int timing = 0;
+                        while (true) {
+                            if (roadArray[nextIndex] != null) {
+                                roadArray[nextIndex].setTiming(timing);
+                                timing += interval;
+                                if (roadArray[nextIndex].isRear()) {
+                                    front.setTiming(interval);
+                                    return;
+                                }
+                            }
+                            nextIndex = (nextIndex + 1) % roadArray.length;
+                        }
+                    }
+                    else {
+                        roadArray[i].setTiming(interval);
+                    }
+                }
+            }
+        }
+    }
+
     private String getRoadList() {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < roadArray.length; i++) {
-            if (roadArray[i] != null && roadArray[i].isFront()) {
-                int nextIndex = i;
-                while (roadArray[nextIndex] != null && !roadArray[nextIndex].isRear()) {
-                    result.append(roadArray[nextIndex].getName()).append("\n");
-                    nextIndex = (nextIndex + 1) % roadArray.length;
-                }
-                result.append(roadArray[nextIndex].getName()).append("\n");
-                return result.toString();
+        for (Road road: roadArray) {
+            if (road != null) {
+                result.append(road.getRoadStatus()).append("\n");
             }
         }
         return result.toString();

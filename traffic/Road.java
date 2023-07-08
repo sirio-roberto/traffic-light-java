@@ -3,10 +3,12 @@ package traffic;
 import java.util.Objects;
 
 public class Road {
+    private final String ANSI_RED = "\u001B[31m";
+    private final String ANSI_GREEN = "\u001B[32m";
+    private final String ANSI_RESET = "\u001B[0m";
     private final String name;
     private boolean isFront = false;
     private boolean isRear = false;
-    private boolean isOpen = false;
 
     private int timing;
 
@@ -25,7 +27,6 @@ public class Road {
 
     public void setFront(boolean front) {
         isFront = front;
-        isOpen = isFront;
     }
 
     public boolean isRear() {
@@ -36,10 +37,6 @@ public class Road {
         isRear = rear;
     }
 
-    public boolean isOpen() {
-        return isOpen;
-    }
-
     public int getTiming() {
         return timing;
     }
@@ -48,12 +45,20 @@ public class Road {
         this.timing = timing;
     }
 
-    public void increaseTiming() {
-        timing++;
+    public void increaseTiming(int value) {
+        timing += value;
     }
 
     public void decreaseTiming() {
         timing--;
+    }
+
+    public String getRoadStatus() {
+        return String.format("%s will be %s for %ds.%s",
+                name,
+                isFront ? ANSI_GREEN + "open" : ANSI_RED + "closed",
+                timing,
+                ANSI_RESET);
     }
 
     @Override
