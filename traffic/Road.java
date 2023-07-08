@@ -10,6 +10,7 @@ public class Road {
     private boolean isFront = false;
     private boolean isRear = false;
 
+    private boolean isOpen = false;
     private int timing;
 
     public Road(String name) {
@@ -37,6 +38,14 @@ public class Road {
         isRear = rear;
     }
 
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
+
     public int getTiming() {
         return timing;
     }
@@ -56,7 +65,7 @@ public class Road {
     public String getRoadStatus() {
         return String.format("%s will be %s for %ds.%s",
                 name,
-                isFront ? ANSI_GREEN + "open" : ANSI_RED + "closed",
+                isOpen ? ANSI_GREEN + "open" : ANSI_RED + "closed",
                 timing,
                 ANSI_RESET);
     }
