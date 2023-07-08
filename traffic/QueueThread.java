@@ -35,7 +35,6 @@ public class QueueThread extends Thread {
             try {
                 if (printInfo) {
                     Main.clearMenu();
-                    updateRoadStatuses();
                     System.out.printf("""
                         ! %ds. have passed since system startup !
                         ! Number of roads: %d !
@@ -44,6 +43,7 @@ public class QueueThread extends Thread {
                         %s
                         ! Press "Enter" to open menu !
                         """, seconds, roads, interval, getRoadList());
+                    updateRoadStatuses();
                 }
                 sleep(1000L);
                 seconds++;

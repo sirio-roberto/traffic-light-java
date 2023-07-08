@@ -81,6 +81,7 @@ public class Main {
                 if (roadArray[i] != null && roadArray[i].isFront()) {
                     System.out.println(roadArray[i] + " deleted!");
                     int timing = roadArray[i].getTiming();
+                    boolean wasOpen = roadArray[i].isOpen();
                     roadArray[i] = null;
                     if (Arrays.stream(roadArray).allMatch(Objects::isNull)) {
                         return;
@@ -90,15 +91,39 @@ public class Main {
                         nextIndex = (nextIndex + 1) % roadArray.length;
                     }
                     roadArray[nextIndex].setFront(true);
-                    while (roadArray[nextIndex] != null) {
-                        roadArray[nextIndex].setTiming(timing);
-                        if (roadArray[nextIndex].isRear()) {
-                            break;
+                    if (wasOpen) {
+                        roadArray[nextIndex].setOpen(true);
+                        while (roadArray[nextIndex] != null) {
+                            roadArray[nextIndex].setTiming(timing);
+                            if (roadArray[nextIndex].isRear()) {
+                                break;
+                            }
+                            timing += interval;
+                            nextIndex = (nextIndex + 1) % roadArray.length;
                         }
-                        timing += interval;
-                        nextIndex = (nextIndex + 1) % roadArray.length;
+                    } else {
+                        updateTimingAfterDeletion();
                     }
                     break;
+                }
+            }
+        }
+    }
+
+    private static void updateTimingAfterDeletion() {
+        for (int i = 0; i < roadArray.length; i++) {
+            if (roadArray[i] != null && roadArray[i].isOpen()) {
+                int timing = roadArray[i].getTiming();
+                int nextIndex = (i + 1) % roadArray.length;
+                while (true) {
+                    if (roadArray[nextIndex] != null) {
+                        if (roadArray[nextIndex].isOpen()) {
+                            return;
+                        }
+                        roadArray[nextIndex].setTiming(timing);
+                        timing += interval;
+                    }
+                    nextIndex = (nextIndex + 1) % roadArray.length;
                 }
             }
         }
